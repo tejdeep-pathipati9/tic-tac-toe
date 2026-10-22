@@ -1,13 +1,12 @@
 EMPTY = " "
+SIZE = 3
 
 class Board:
     """A square Tic-Tac-Toe board."""
 
-    def __init__(self, size: int = 3) -> None:
-        if size < 3:
-            raise ValueError("size must be at least 3")
-        self._size = size
-        self._grid = [[EMPTY] * size for _ in range(size)]
+    def __init__(self) -> None:
+        self._size = SIZE
+        self._grid = [[EMPTY] * SIZE for _ in range(SIZE)]
 
     @property
     def size(self) -> int:
@@ -39,12 +38,26 @@ class Board:
 
     def copy(self) -> "Board":
         """Return an independent copy of this board."""
-        clone = Board(self._size)
+        clone = Board()
         clone._grid = [row[:] for row in self._grid]
         return clone
 
     def has_won(self, mark: str) -> bool:
         """Return whether the given mark has a winning row, column, or diagonal."""
+        for row in range(self._size):
+            if all(self._grid[row][col] == mark for col in range(self._size)):
+                return True
+            
+        for col in range(self._size):
+            if all(self._grid[row][col] == mark for row in range(self._size)):
+                return True
+            
+        if all(self._grid[i][i] == mark for i in range(self._size)):
+            return True
+
+        if all(self._grid[i][self._size - i - 1] == mark for i in range(self._size)):
+            return True
+        
         return False
     
     def __str__(self) -> str:
