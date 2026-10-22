@@ -5,8 +5,8 @@ class Board:
     """A square Tic-Tac-Toe board."""
 
     def __init__(self) -> None:
-        self._size = SIZE
-        self._grid = [[EMPTY] * SIZE for _ in range(SIZE)]
+        self._size: int = SIZE
+        self._grid: list[list[str]] = [[EMPTY] * SIZE for _ in range(SIZE)]
 
     @property
     def size(self) -> int:
