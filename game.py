@@ -1,4 +1,5 @@
 from board import Board
+from ai import AIPlayer
 from enum import Enum
 
 class GameState(Enum):
@@ -7,11 +8,12 @@ class GameState(Enum):
     DRAW = "DRAW"
 
 class Game:
-    def __init__(self) -> None:
+    def __init__(self, ai: AIPlayer | None = None) -> None:
         self.board : Board = Board()
         self.current_player : str = "X"
         self.state : GameState = GameState.IN_PROGRESS
         self.winner : str | None  = None
+        self.ai = ai
 
     def get_board(self) -> Board:
         """Return the current board"""
@@ -23,6 +25,21 @@ class Game:
 
     def get_winner(self) -> str | None:
         return self.winner
+
+    def is_computer_turn(self) -> bool:
+        return (
+            self.ai is not None
+            and self.current_player == "O"
+            and self.state is GameState.IN_PROGRESS
+        )
+
+    def make_computer_move(self) -> bool:
+        """Choose and apply O's move through the normal game rules."""
+        if self.ai is None or not self.is_computer_turn():
+            return False
+
+        row, col = self.ai.choose_move(self.board, self.current_player)
+        return self.make_move(row, col)
     
     def make_move(self, row: int, col: int) -> bool:
         """Place mark at row, col. Return True if placed, False if not."""
@@ -52,4 +69,3 @@ class Game:
 
         else:
             self.current_player = "X"
-        
