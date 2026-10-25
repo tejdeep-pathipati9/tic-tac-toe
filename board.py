@@ -42,6 +42,11 @@ class Board:
         clone._grid = [row[:] for row in self._grid]
         return clone
 
+    def remove_mark(self, row: int, col: int) -> None:
+        """Clear a cell; leave the board unchanged for off-board positions."""
+        if self._in_range(row, col):
+            self._grid[row][col] = EMPTY
+
     def has_won(self, mark: str) -> bool:
         """Return whether the given mark has a winning row, column, or diagonal."""
         for row in range(self._size):
