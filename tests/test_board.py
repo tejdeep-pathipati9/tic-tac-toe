@@ -1,5 +1,5 @@
 import pytest
-from board import Board
+from board import Board, EMPTY
 
 @pytest.fixture
 def board():
@@ -18,6 +18,49 @@ def test_cannot_place_on_taken_cell(board):
     result = board.place_mark(0, 0, "O")
     assert result is False
     assert board.cell(0, 0) == "X"
+
+@pytest.mark.parametrize("mark", ["X", "O"])
+def test_remove_mark_clears_cell_and_preserves_other_marks(board, mark):
+    board.place_mark(1, 1, mark)
+    board.place_mark(0, 0, "O")
+
+    assert board.remove_mark(1, 1) is None
+
+    assert board.cell(1, 1) == EMPTY
+    assert (1, 1) in board.empty_cells()
+    assert board.cell(0, 0) == "O"
+    assert len(board.empty_cells()) == 8
+
+def test_removed_cell_can_be_used_again(board):
+    board.place_mark(1, 1, "X")
+    board.remove_mark(1, 1)
+
+    assert board.place_mark(1, 1, "O") is True
+    assert board.cell(1, 1) == "O"
+
+def test_removing_from_empty_cell_leaves_board_empty(board):
+    assert board.remove_mark(1, 1) is None
+    assert len(board.empty_cells()) == 9
+
+@pytest.mark.parametrize("row, col", [(-1, 0), (0, -1), (3, 0), (0, 3)])
+def test_remove_mark_outside_board_leaves_board_unchanged(board, row, col):
+    board.place_mark(2, 0, "X")
+    board.place_mark(0, 2, "O")
+    before = [[board.cell(r, c) for c in range(3)] for r in range(3)]
+
+    assert board.remove_mark(row, col) is None
+
+    assert [[board.cell(r, c) for c in range(3)] for r in range(3)] == before
+
+def test_removing_a_winning_mark_clears_the_win(board):
+    for col in range(3):
+        board.place_mark(0, col, "X")
+    assert board.has_won("X") is True
+
+    board.remove_mark(0, 1)
+
+    assert board.has_won("X") is False
+    assert board.cell(0, 1) == EMPTY
 
 @pytest.mark.parametrize("row, col", [(-1, 0), (0, -1), (3, 0), (0, 3)])
 def test_off_board_moves_are_rejected(board, row, col):
