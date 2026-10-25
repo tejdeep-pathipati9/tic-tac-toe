@@ -3,6 +3,7 @@ from ai import EasyAI, HardAI
 from game import Game, GameState
 
 def ask_for_game_mode() -> int:
+    """Ask for a game mode and return 1 for two players or 2 for computer mode."""
     print("\nChoose a game mode\n")
     print(" 1. Two players")
     print(" 2. Versus Computer")
@@ -16,6 +17,7 @@ def ask_for_game_mode() -> int:
 
 
 def ask_computer_difficulty_level() -> int:
+    """Ask for a difficulty and return 1 for Easy or 2 for Hard."""
     print("\nChoose a difficulty level\n")
     print(" 1. Easy")
     print(" 2. Hard")
@@ -28,6 +30,7 @@ def ask_computer_difficulty_level() -> int:
     return int(level)
 
 def ask_for_input_from_player(game: Game, names: dict[str, str]) -> tuple[int, int]:
+    """Ask for valid coordinates from 1 to 3 and return zero-based indices."""
     while True:
         grid_index = input(f"\n{names[game.get_player()]}, enter row and column (1-3), like 2 3: ").split()
 
@@ -54,6 +57,7 @@ def ask_for_input_from_player(game: Game, names: dict[str, str]) -> tuple[int, i
         return int(grid_index[0]) - 1, int(grid_index[1]) - 1
 
 def ask_for_player_names(choice) -> dict[str, str]:
+    """Ask for human players' names and map each symbol to its display name."""
     names = {}
 
     if choice == 1:
@@ -78,6 +82,7 @@ def ask_for_player_names(choice) -> dict[str, str]:
     return names
 
 def main() -> None:
+    """Set up and run a terminal game until a player wins or the game is drawn."""
     print("\nWelcome to Tic Tac Toe!!!")
 
     game_mode = ask_for_game_mode()

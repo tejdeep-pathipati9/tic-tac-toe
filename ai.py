@@ -3,34 +3,38 @@ from board import Board
 import random
 
 class AIPlayer(ABC):
-    """Base class for every computer opponent."""
+    """Define the move-selection interface for computer opponents."""
 
     @abstractmethod
     def choose_move(self, board: Board, mark: str) -> tuple[int, int]:
-        """Return a (row, col) tuple for an empty cell on the board."""
+        """Return an empty cell's zero-based coordinates without changing the board."""
 
 class EasyAI(AIPlayer):
-    """Picks any empty cell at random."""
+    """Select a random empty cell."""
 
     def __init__(self, rng=None) -> None:
+        """Use the supplied random generator, or create one."""
         if rng is None:
             rng = random.Random()
 
         self._rng = rng
 
     def choose_move(self, board: Board, mark: str) -> tuple[int, int]:
+        """Return a random empty cell without changing the board."""
         return self._rng.choice(board.empty_cells())
 
 class HardAI(AIPlayer):
-    """Uses Minimax Algorithm to select best row and column"""
+    """Use minimax to choose the best move for the computer playing O."""
 
     def __init__(self, rng=None):
+        """Use the random generator to break ties between equally good moves."""
         if rng is None:
             rng = random.Random()
 
         self._rng = rng
 
     def choose_move(self, board : Board, mark : str) -> tuple[int, int]:
+        """Choose O's best move, raising ValueError if no empty cells remain."""
         empty_cells = board.empty_cells()
 
         if not empty_cells:
@@ -42,6 +46,7 @@ class HardAI(AIPlayer):
         for row, col in empty_cells:
             board.place_mark(row, col, mark)
 
+            # Prefer an immediate win over other moves with the same minimax score.
             if board.has_won(mark):
                 board.remove_mark(row, col)
                 return row, col
@@ -59,6 +64,10 @@ class HardAI(AIPlayer):
         return self._rng.choice(best_moves)
 
     def _minimax(self, board : Board, maximizing_players: bool) -> int:
+        """Score a position: 1 for an O win, -1 for an X win, and 0 for a draw.
+        O maximizes the score and X minimizes it. Undo simulated moves so each branch 
+        starts from the same board position.
+        """
         if board.has_won("O"):
             return 1 
         
