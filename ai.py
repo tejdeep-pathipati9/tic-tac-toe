@@ -20,7 +20,7 @@ class EasyAI(AIPlayer):
         return self._rng.choice(board.empty_cells())
 
 class HardAI(AIPlayer):
-    """Uses Minimax Alogrithm to select best row and column"""
+    """Uses Minimax Algorithm to select best row and column"""
 
     def __init__(self, rng=None):
         if rng is None:
