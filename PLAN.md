@@ -29,3 +29,8 @@
 | How to organize the AI classes | One AI class with difficulty checks, or an abstract base class with separate subclasses | An abstract `AI` class with a `choose_move(board, mark)` method implemented by `EasyAI` and `HardAI` | Each difficulty handles its own move-selection logic, while the game uses the same interface. |
 | How to store the board | A flat list of nine cells, or a nested list containing three rows of three cells | A nested list representing the 3 × 3 board | It matches the board’s layout and allows cells to be accessed using row and column indices. |
 
+5. **What changed**
+    - Added a `GameState` enum and an optional AI opponent to `Game` so both modes use the same turn, win, and draw handling.
+    - Added player names in `main.py`, using a dictionary to map names to X and O. This keeps display details separate from the game rules.
+    - Added `Board.remove_mark()` after the initial Board implementation so minimax can undo simulated moves and leave the real board unchanged.
+    - Reprint the board after a player selects an occupied cell so they can see the available positions before trying again.
