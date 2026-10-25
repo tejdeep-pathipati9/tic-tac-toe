@@ -1,7 +1,9 @@
+import random
+from ai import EasyAI, HardAI
 from game import Game, GameState
 
 def ask_for_game_mode() -> int:
-    print("\nChoose a game a mode")
+    print("\nChoose a game mode\n")
     print(" 1. Two players")
     print(" 2. Versus Computer")
 
@@ -13,22 +15,21 @@ def ask_for_game_mode() -> int:
     return int(choice)
 
 
-def ask_computer_difficuilty_level() -> int:
-    print("Choose a difficulty level")
+def ask_computer_difficulty_level() -> int:
+    print("\nChoose a difficulty level\n")
     print(" 1. Easy")
     print(" 2. Hard")
 
-    level = input("Enter your preferred difficulty level: ").strip()
+    level = input("\nEnter your preferred difficulty level: ").strip()
 
     while not level.isdigit() or level not in ("1", "2"):
-        level = input("Invalid choice! Please enter 1 or 2: ")
+        level = input("Invalid choice! Please enter 1 or 2: ").strip()
         
     return int(level)
 
-# choice is 1
-def ask_for_input_from_player(game: Game, names) -> tuple[int, int]:
+def ask_for_input_from_player(game: Game, names: dict[str, str]) -> tuple[int, int]:
     while True:
-        grid_index = input(f"Player {names[game.get_player()]}, enter row and column (1-3), like 2 3: ").split()
+        grid_index = input(f"\n{names[game.get_player()]}, enter row and column (1-3), like 2 3: ").split()
 
         if len(grid_index) != 2:
             print("Invalid input! Enter a row and column, for example: 2 3.")
@@ -72,30 +73,45 @@ def ask_for_player_names(choice) -> dict[str, str]:
         names["O"] = "Computer"
 
         print(f"\n{names['X']} plays X and goes first.")
-        print(f"{names['O']} plays O.")
+        print(f"{names['O']} plays O.\n")
 
     return names
 
-def main():
+def main() -> None:
     print("\nWelcome to Tic Tac Toe!!!")
 
-    game = Game()
     game_mode = ask_for_game_mode()
-    difficulty = None
+    ai = None
 
     if game_mode == 2:
-        difficulty = ask_computer_difficuilty_level()
-        # pass the difficulty to AI
+        difficulty = ask_computer_difficulty_level()
+        rng = random.Random()
+
+        if difficulty == 1:
+            ai = EasyAI(rng)
+        else:
+            ai = HardAI(rng)
 
     names = ask_for_player_names(game_mode)
+    game = Game(ai)
 
     print(game.get_board())
 
     while game.state is GameState.IN_PROGRESS:
-        row, col = ask_for_input_from_player(game, names)
-        result = game.make_move(row, col)
+        computer_turn = game.is_computer_turn()
+
+        if computer_turn:
+            print("\nComputer's turn (O).")
+            result = game.make_computer_move()
+        else:
+            row, col = ask_for_input_from_player(game, names)
+            result = game.make_move(row, col)
 
         if result is False:
+            if computer_turn:
+                print("The computer could not make a valid move.")
+                return
+
             print("That cell is already taken. Please try again.\n")
             print(game.get_board())
             continue
